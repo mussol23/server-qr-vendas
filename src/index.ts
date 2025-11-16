@@ -6,7 +6,21 @@ import syncRouter from './routes/sync';
 import adminEstablishments from './routes/admin.establishments';
 
 const app = express();
-app.use(cors());
+
+const corsOptions: cors.CorsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'https://localhost:3000',
+    'capacitor://localhost',
+    'ionic://localhost',
+    // adicione aqui o domínio final do front quando tiver
+  ],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '2mb' }));
 
 app.get('/health', (_, res) => res.json({ ok: true }));
