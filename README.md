@@ -1,0 +1,1 @@
+# server-qr-vendas
