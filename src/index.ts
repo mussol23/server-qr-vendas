@@ -4,8 +4,7 @@ import cors from 'cors';
 import { authMiddleware } from './middleware/auth';
 import syncRouter from './routes/sync';
 import adminEstablishments from './routes/admin.establishments';
-import userBootstrap from './routes/user.bootstrap';
-import userEstablishment from './routes/user.establishment';
+
 
 const app = express();
 
