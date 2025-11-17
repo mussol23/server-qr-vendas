@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { syncRouter } from './routes/sync';
-import { adminEstablishmentsRouter } from './routes/admin.establishments';
-import { userBootstrapRouter } from './routes/user.bootstrap';
-import { userEstablishmentRouter } from './routes/user.establishment';
+import syncRouter from './routes/sync';
+import adminEstablishmentsRouter from './routes/admin.establishments';
+import userBootstrapRouter from './routes/user.bootstrap';
+import userEstablishmentRouter from './routes/user.establishment';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -41,5 +41,5 @@ app.use('/user/bootstrap', userBootstrapRouter);
 
 app.listen(port, () => {
   console.log(`✅ Server running on port ${port}`);
-  console.log(`📡 CORS enabled for: ${corsOptions.origin?.join(', ')}`);
+  console.log(`📡 CORS enabled for multiple origins`);
 });
