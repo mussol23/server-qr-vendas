@@ -4,7 +4,7 @@ import { supabaseAdmin } from '../lib/supabase';
 const router = Router();
 
 // Bootstrap user profile and establishment after signup
-router.post('/bootstrap', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as { id: string; email?: string };
     if (!user?.id) return res.status(401).json({ error: 'Unauthorized' });

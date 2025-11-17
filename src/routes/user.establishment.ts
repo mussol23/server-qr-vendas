@@ -4,7 +4,7 @@ import { supabaseAdmin } from '../lib/supabase';
 const router = Router();
 
 // Upsert current user's establishment and link in profiles.establishment_id
-router.post('/establishment', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as { id: string };
     if (!user?.id) return res.status(401).json({ error: 'Unauthorized' });
