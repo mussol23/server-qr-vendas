@@ -1,33 +1,45 @@
-import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { authMiddleware } from './middleware/auth';
-import syncRouter from './routes/sync';
-import adminEstablishments from './routes/admin.establishments';
+import { syncRouter } from './routes/sync';
+import { adminEstablishmentsRouter } from './routes/admin.establishments';
+import { userBootstrapRouter } from './routes/user.bootstrap';
+import { userEstablishmentRouter } from './routes/user.establishment';
 
 const app = express();
+const port = process.env.PORT || 8080;
 
+// CORS configuration - CRITICAL: must come BEFORE routes
 const corsOptions: cors.CorsOptions = {
   origin: [
     'http://localhost:3000',
     'https://localhost:3000',
+    'http://localhost:5173',
+    'https://localhost:5173',
     'capacitor://localhost',
     'ionic://localhost',
-    // adicione aqui o domínio final do front quando tiver
+    // Add your deployed frontend domain here later
   ],
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
-app.use(express.json({ limit: '2mb' }));
+app.options('*', cors(corsOptions)); // Handle preflight
 
-app.get('/health', (_, res) => res.json({ ok: true }));
+app.use(express.json());
 
-app.use(authMiddleware);
+app.get('/', (req, res) => {
+  res.json({ message: 'QR Vendas Server API' });
+});
+
 app.use('/sync', syncRouter);
-app.use('/admin', adminEstablishments);
+app.use('/admin/establishments', adminEstablishmentsRouter);
+app.use('/user/establishment', userEstablishmentRouter);
+app.use('/user/bootstrap', userBootstrapRouter);
 
-const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`API listening on :${port}`));
+app.listen(port, () => {
+  console.log(`✅ Server running on port ${port}`);
+  console.log(`📡 CORS enabled for: ${corsOptions.origin?.join(', ')}`);
+});
