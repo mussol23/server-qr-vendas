@@ -1,7 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { supabaseAdmin } from '../lib/supabase';
+import { authMiddleware } from '../middleware/auth';
 
 const router = Router();
+
+// Apply auth middleware to all routes
+router.use(authMiddleware);
 
 // Upsert current user's establishment and link in profiles.establishment_id
 router.post('/', async (req: Request, res: Response) => {
