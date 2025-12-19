@@ -6,6 +6,7 @@ import adminEstablishmentsRouter from './routes/admin.establishments';
 import userBootstrapRouter from './routes/user.bootstrap';
 import userEstablishmentRouter from './routes/user.establishment';
 import employeesRouter from './routes/employees';
+import adminRouter from './routes/admin';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -59,6 +60,7 @@ app.get('/', (req, res) => {
 
 app.use('/sync', syncRouter);
 app.use('/admin/establishments', adminEstablishmentsRouter);
+app.use('/admin', adminRouter);
 app.use('/user/establishment', userEstablishmentRouter);
 app.use('/user/bootstrap', userBootstrapRouter);
 app.use('/employees', employeesRouter);
