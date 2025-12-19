@@ -339,4 +339,131 @@ router.post('/delete', async (req: Request, res: Response) => {
   }
 });
 
+// Search product by barcode in establishment
+router.post('/search-barcode', async (req: Request, res: Response) => {
+  try {
+    const { barcode } = req.body as { barcode: string };
+    const user = (req as any).user as { id: string; establishment_id?: string | null };
+
+    if (!barcode) {
+      return res.status(400).json({ error: 'barcode is required' });
+    }
+
+    const establishmentId = user?.establishment_id;
+    if (!establishmentId) {
+      return res.status(403).json({ error: 'User must have establishment_id' });
+    }
+
+    console.log(`🔍 Searching product by barcode: ${barcode} for establishment: ${establishmentId}`);
+
+    // Search in establishment's products
+    const { data, error } = await supabaseAdmin
+      .rpc('search_product_by_barcode', {
+        barcode_value: barcode,
+        establishment_id_param: establishmentId
+      });
+
+    if (error) {
+      console.error('❌ Error searching product by barcode:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    if (data && data.length > 0) {
+      console.log(`✅ Found product by barcode: ${data[0].name}`);
+      return res.json({ product: data[0] });
+    }
+
+    console.log(`ℹ️ No product found with barcode: ${barcode}`);
+    res.json({ product: null });
+  } catch (error: any) {
+    console.error('❌ Error in search-barcode:', error);
+    res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
+// Search global product by barcode
+router.post('/search-global-barcode', async (req: Request, res: Response) => {
+  try {
+    const { barcode } = req.body as { barcode: string };
+
+    if (!barcode) {
+      return res.status(400).json({ error: 'barcode is required' });
+    }
+
+    console.log(`🌐 Searching global product by barcode: ${barcode}`);
+
+    const { data, error } = await supabaseAdmin
+      .rpc('search_global_product_by_barcode', {
+        barcode_value: barcode
+      });
+
+    if (error) {
+      console.error('❌ Error searching global product:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    if (data && data.length > 0) {
+      console.log(`✅ Found global product: ${data[0].name}`);
+      return res.json({ globalProduct: data[0] });
+    }
+
+    console.log(`ℹ️ No global product found with barcode: ${barcode}`);
+    res.json({ globalProduct: null });
+  } catch (error: any) {
+    console.error('❌ Error in search-global-barcode:', error);
+    res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
+// Create global product
+router.post('/create-global-product', async (req: Request, res: Response) => {
+  try {
+    const { barcode, name, brand, category, unit, size, defaultPrice, imageUrl } = req.body as {
+      barcode: string;
+      name: string;
+      brand?: string;
+      category?: string;
+      unit?: string;
+      size?: string;
+      defaultPrice?: number;
+      imageUrl?: string;
+    };
+    const user = (req as any).user as { id: string };
+
+    if (!barcode || !name) {
+      return res.status(400).json({ error: 'barcode and name are required' });
+    }
+
+    console.log(`➕ Creating global product: ${name} (${barcode})`);
+
+    const { data, error } = await supabaseAdmin
+      .from('global_products')
+      .insert({
+        barcode,
+        name,
+        brand,
+        category,
+        unit,
+        size,
+        default_price: defaultPrice,
+        image_url: imageUrl,
+        created_by: user.id
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error creating global product:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    console.log(`✅ Created global product: ${data.name}`);
+    res.json({ globalProduct: data });
+  } catch (error: any) {
+    console.error('❌ Error in create-global-product:', error);
+    res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
 export default router;
+
