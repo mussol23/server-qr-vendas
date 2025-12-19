@@ -403,8 +403,17 @@ router.post('/search-global-barcode', async (req: Request, res: Response) => {
     }
 
     if (data && data.length > 0) {
-      console.log(`✅ Found global product: ${data[0].name}`);
-      return res.json({ globalProduct: data[0] });
+      const product = data[0];
+      console.log(`✅ Found global product: ${product.name}`);
+
+      // Map snake_case from DB to camelCase for frontend
+      const mappedProduct = {
+        ...product,
+        imageUrl: product.image_url,
+        defaultPrice: product.default_price
+      };
+
+      return res.json({ globalProduct: mappedProduct });
     }
 
     console.log(`ℹ️ No global product found with barcode: ${barcode}`);
